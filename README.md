@@ -6,3 +6,4 @@
 </p>
 <h1>BeefBoard</h1>
 </div>
+<p>An open-source social media plateform.</p>
