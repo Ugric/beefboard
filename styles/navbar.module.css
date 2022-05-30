@@ -1,0 +1,26 @@
+.navbar_container {
+  background-color: #fff;
+  border-radius: 0 0 5px 5px;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.small {
+  display: none;
+}
+@media (max-width: 768px) {
+  .big {
+    display: none;
+  }
+  .small {
+    display: block;
+  }
+}
+.name {
+    margin: 0;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+}
