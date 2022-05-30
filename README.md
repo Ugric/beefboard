@@ -5,5 +5,5 @@
     <img width="80" src="https://github.com/Ugric/beefboard/blob/main/static-images/beefboard-logo.png">
 </p>
 <h1>BeefBoard</h1>
-</div>
 <p>An open-source social media plateform.</p>
+</div>
