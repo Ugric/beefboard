@@ -2,8 +2,12 @@
   --light-bg-colour: #515151;
   --main-bg-colour: #2c2c2c;
   --dark-bg-colour: #1a1a1a;
-  --primary-text-colour: #ffa3a3;
-  --secondary-text-colour: #ff6767;
+  --primary-text-colour: #f7a8b3;
+  --secondary-text-colour: #fd697b;
   --online: #90ee90;
   --offline: #5c5c5c;
+  --upvote: #41de41;
+    --downvote: #da2d2d;
+    --light-text-colour: #fafafa;
+    --highlight-colour: #ff6767a7;
 }

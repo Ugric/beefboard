@@ -1,15 +1,23 @@
 .navbar_container {
-  background-color: #fff;
-  border-radius: 0 0 5px 5px;
+  background-color: var(--main-bg-colour);
   display: flex;
   justify-content: space-between;
   padding: 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  filter: drop-shadow(2px 4px 6px black);
+  z-index: 100;
+}
+
+.navbar_container * {
+  margin: 0;
 }
 
 .small {
   display: none;
 }
-@media (max-width: 768px) {
+@media (max-width: 700px) {
   .big {
     display: none;
   }
@@ -18,9 +26,14 @@
   }
 }
 .name {
-    margin: 0;
-    padding: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #000;
+  margin-left: 10px;
+  font-weight: bold;
+  color: var(--primary-text-colour);
+}
+
+.logo {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
 }
