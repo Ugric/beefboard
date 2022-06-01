@@ -38,6 +38,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#2c2c2c" />
         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
         <meta name="theme-color" content="#2c2c2c" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6522065990038784"
+          crossOrigin="anonymous"
+        ></script>
       </Head>
 
       <Navbar setheight={setNavHeight}></Navbar>
