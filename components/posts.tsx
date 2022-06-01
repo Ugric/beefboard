@@ -4,6 +4,11 @@ import type { postProps } from "./post";
 import { CSSProperties } from "styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useState } from "react";
+import AdBanner from "./ads";
+
+type adsenseProps = {
+  type: "adsense";
+};
 
 function Posts({
   posts,
@@ -11,7 +16,7 @@ function Posts({
   hasMore,
   style,
 }: {
-  posts: postProps[];
+  posts: (postProps | adsenseProps)[];
   next: () => void;
   hasMore: boolean;
   style?: CSSProperties;
@@ -24,9 +29,17 @@ function Posts({
         hasMore={hasMore}
         loader={<></>}
       >
-        {posts.map((post, index) => (
-          <Post post={post} key={index} />
-        ))}
+        {posts.map((post, index) =>
+          post.type == "adsense" ? (
+            <div className={styles.post_outer_container}>
+              <div className={styles.post}>
+                <AdBanner></AdBanner>
+              </div>
+            </div>
+          ) : (
+            <Post post={post} key={index} />
+          )
+        )}
       </InfiniteScroll>
     </div>
   );
