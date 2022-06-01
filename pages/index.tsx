@@ -33,7 +33,7 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
           setPosts(
             posts.concat(
               Array.from({ length: 10 }, () =>
-                Math.random() > 0.5
+                Math.random() > 0.1
                   ? {
                       type: "post",
                       title: faker.lorem.sentence(),
@@ -65,7 +65,7 @@ export function getServerSideProps() {
   return {
     props: {
       initposts: Array.from({ length: 10 }, () =>
-        Math.random() > 0.5
+        Math.random() > 0.1
           ? {
               type: "post",
               title: faker.lorem.sentence(),
