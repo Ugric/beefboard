@@ -26,6 +26,7 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
           setPosts(
             posts.concat(
               Array.from({ length: 10 }, () => ({
+                
                 title: faker.lorem.sentence(),
                 content: [
                   faker.lorem.paragraph(),
