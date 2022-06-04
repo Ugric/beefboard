@@ -1,7 +1,7 @@
 import styles from "../styles/posts.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import { LegacyRef, useEffect, useRef, useState } from "react";
 import ResponsiveImage from "./responsiveImage";
 
 type ImageProps = {
@@ -11,10 +11,11 @@ type ImageProps = {
 };
 
 type postProps = {
-  type: 'post';
+  type?: undefined;
   title: string;
   content: (string | ImageProps)[];
   votes: number;
+  time: number;
   voted: 1 | 0 | -1;
   id: string;
 };
@@ -37,10 +38,19 @@ function formatNumber(num: number): string {
   return Number(number.toPrecision(3)) + suffix;
 }
 
-function Post({ post }: { post: postProps }) {
+function Post({
+  post,
+  postRef,
+}: {
+  post: postProps;
+  postRef?: {
+    current?: HTMLDivElement | null;
+    [key: string]: any;
+  };
+}) {
   const [vote, setVote] = useState(post.voted);
   const [showmore, setShowMore] = useState(false);
-  const [needstoshowmore, setneedsToShowMore] = useState<null|boolean>(null);
+  const [needstoshowmore, setneedsToShowMore] = useState<null | boolean>(null);
   const contentref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,8 +66,16 @@ function Post({ post }: { post: postProps }) {
     }
   }, []);
 
+  const divref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (postRef) {
+      postRef.current = divref.current;
+    }
+  }, [divref.current, divref, postRef?.current, postRef]);
+
   return (
-    <div className={styles.post_outer_container}>
+    <div className={styles.post_outer_container} ref={divref}>
       <div className={styles.post}>
         <div className={styles.post_votes}>
           <button onClick={() => setVote(vote == 1 ? 0 : 1)}>
@@ -92,7 +110,11 @@ function Post({ post }: { post: postProps }) {
           <h1 className={styles.title}>{post.title}</h1>
           <div
             ref={contentref}
-            className={!showmore && (needstoshowmore||needstoshowmore===null) ? styles.hide_some : undefined}
+            className={
+              !showmore && (needstoshowmore || needstoshowmore === null)
+                ? styles.hide_some
+                : undefined
+            }
           >
             {post.content.map((content, index) => {
               if (typeof content === "string") {
@@ -115,9 +137,12 @@ function Post({ post }: { post: postProps }) {
             })}
           </div>
           {needstoshowmore && (
-              <a onClick={() => setShowMore(!showmore)} className={styles.showmore}>
-                {showmore ? "Show Less" : "Show More"}
-              </a>
+            <a
+              onClick={() => setShowMore(!showmore)}
+              className={styles.showmore}
+            >
+              {showmore ? "Show Less" : "Show More"}
+            </a>
           )}
         </div>
       </div>

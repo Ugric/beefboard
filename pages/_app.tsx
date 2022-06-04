@@ -4,6 +4,7 @@ import "../styles/colour-palette.css";
 import Head from "next/head";
 import Navbar from "../components/navbar";
 import { useState } from "react";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [navHeight, setNavHeight] = useState(0);
@@ -38,13 +39,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#2c2c2c" />
         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
         <meta name="theme-color" content="#2c2c2c" />
-        <script
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6522065990038784"
           crossOrigin="anonymous"
-        ></script>
+        ></Script>
       </Head>
-
       <Navbar setheight={setNavHeight}></Navbar>
       <Component {...pageProps} />
     </>

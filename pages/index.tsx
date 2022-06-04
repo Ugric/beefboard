@@ -1,22 +1,24 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Navbar from "../components/navbar";
-import Posts from "../components/posts";
-import styles from "../styles/Home.module.css";
+import Posts, { adsenseProps } from "../components/posts";
 import example from "../static-images/example.jpeg";
-import { useCallback, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
 import { postProps } from "../components/post";
+import LogRocket from "logrocket";
+import recommended from "../AI/recommended";
+
+if (typeof window !== "undefined") {
+  LogRocket.init("beefboard/beefboard");
+}
 
 const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
   const [posts, setPosts] = useState<
     (
       | postProps
-      | {
-          type: "adsense";
-        }
+      | adsenseProps
     )[]
-  >(initposts);
+    >(initposts);
   const [hasMore, setHasMore] = useState(true);
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -29,32 +31,10 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
       <Posts
         posts={posts}
         hasMore={hasMore}
-        next={() => {
-          setPosts(
-            posts.concat(
-              Array.from({ length: 10 }, () =>
-                Math.random() > 0.1
-                  ? {
-                      type: "post",
-                      title: faker.lorem.sentence(),
-                      content: [
-                        faker.lorem.paragraph(),
-                        {
-                          src: example.src + "?" + Math.random(),
-                          alt: "magnifying glass",
-                          aspectRatio: 1.5,
-                        },
-                      ],
-                      votes: Math.round(Math.random() * 1000000),
-                      voted: 0,
-                      id: faker.random.alphaNumeric(100),
-                    }
-                  : {
-                      type: "adsense",
-                    }
-              )
-            )
-          );
+        next={async () => {
+          const data = await fetch('/api/recommended')
+          const newposts = await data.json()
+          setPosts([...posts, ...newposts]);
         }}
       />
     </>
@@ -64,27 +44,7 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
 export function getServerSideProps() {
   return {
     props: {
-      initposts: Array.from({ length: 10 }, () =>
-        Math.random() > 0.1
-          ? {
-              type: "post",
-              title: faker.lorem.sentence(),
-              content: [
-                faker.lorem.paragraph(),
-                {
-                  src: example.src + "?" + Math.random(),
-                  alt: "magnifying glass",
-                  aspectRatio: 1.5,
-                },
-              ],
-              votes: Math.round(Math.random() * 1000000),
-              voted: 0,
-              id: faker.random.alphaNumeric(100),
-            }
-          : {
-              type: "adsense",
-            }
-      ),
+      initposts: recommended(),
     },
   };
 }
