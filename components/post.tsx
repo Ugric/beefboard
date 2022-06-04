@@ -11,7 +11,7 @@ type ImageProps = {
 };
 
 type postProps = {
-  type: 'post';
+  type?:undefined;
   title: string;
   content: (string | ImageProps)[];
   votes: number;
