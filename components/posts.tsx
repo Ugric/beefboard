@@ -8,6 +8,11 @@ import AdBanner from "./ads";
 
 type adsenseProps = {
   type: "adsense";
+  title?: undefined;
+  content?: undefined;
+  votes?: undefined;
+  voted?: undefined;
+  id?: undefined;
 };
 
 function Posts({

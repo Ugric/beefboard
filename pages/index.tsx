@@ -9,7 +9,14 @@ import { faker } from "@faker-js/faker";
 import { postProps } from "../components/post";
 
 const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
-  const [posts, setPosts] = useState<postProps[]>(initposts);
+  const [posts, setPosts] = useState<
+    (
+      | postProps
+      | {
+          type: "adsense";
+        }
+    )[]
+  >(initposts);
   const [hasMore, setHasMore] = useState(true);
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -25,21 +32,27 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
         next={() => {
           setPosts(
             posts.concat(
-              Array.from({ length: 10 }, () => ({
-                
-                title: faker.lorem.sentence(),
-                content: [
-                  faker.lorem.paragraph(),
-                  {
-                    src: example.src + "?" + Math.random(),
-                    alt: "magnifying glass",
-                    aspectRatio: 1.5,
-                  },
-                ],
-                votes: Math.round(Math.random() * 1000000),
-                voted: 0,
-                id: faker.random.alphaNumeric(100),
-              }))
+              Array.from({ length: 10 }, () =>
+                Math.random() > 0.1
+                  ? {
+                      type: "post",
+                      title: faker.lorem.sentence(),
+                      content: [
+                        faker.lorem.paragraph(),
+                        {
+                          src: example.src + "?" + Math.random(),
+                          alt: "magnifying glass",
+                          aspectRatio: 1.5,
+                        },
+                      ],
+                      votes: Math.round(Math.random() * 1000000),
+                      voted: 0,
+                      id: faker.random.alphaNumeric(100),
+                    }
+                  : {
+                      type: "adsense",
+                    }
+              )
             )
           );
         }}
@@ -51,20 +64,27 @@ const Home: NextPage<{ initposts: postProps[] }> = ({ initposts }) => {
 export function getServerSideProps() {
   return {
     props: {
-      initposts: Array.from({ length: 10 }, () => ({
-        title: faker.lorem.sentence(),
-        content: [
-          faker.lorem.paragraph(),
-          {
-            src: example.src + "?" + Math.random(),
-            alt: "magnifying glass",
-            aspectRatio: 1.5,
-          },
-        ],
-        votes: Math.round(Math.random() * 1000000),
-        voted: 0,
-        id: faker.random.alphaNumeric(100),
-      })),
+      initposts: Array.from({ length: 10 }, () =>
+        Math.random() > 0.1
+          ? {
+              type: "post",
+              title: faker.lorem.sentence(),
+              content: [
+                faker.lorem.paragraph(),
+                {
+                  src: example.src + "?" + Math.random(),
+                  alt: "magnifying glass",
+                  aspectRatio: 1.5,
+                },
+              ],
+              votes: Math.round(Math.random() * 1000000),
+              voted: 0,
+              id: faker.random.alphaNumeric(100),
+            }
+          : {
+              type: "adsense",
+            }
+      ),
     },
   };
 }
