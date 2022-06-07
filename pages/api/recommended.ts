@@ -5,10 +5,7 @@ import { adsenseProps } from "../../components/posts";
 
 export default (
   req: NextApiRequest,
-  res: NextApiResponse<(postProps | adsenseProps
-)[]>
+  res: NextApiResponse<(postProps | adsenseProps)[]>
 ) => {
-  res.status(200).json(
-    recommended()
-  );
+  res.status(200).json(recommended());
 };

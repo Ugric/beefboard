@@ -21,6 +21,7 @@
     "@types/styled-components": "^5.1.25",
     "apollo-server-micro": "^3.8.1",
     "body-parser": "^1.20.0",
+    "cypress": "^10.0.3",
     "faker": "^6.6.6",
     "formidable": "^2.0.1",
     "fs": "^0.0.1-security",
@@ -34,13 +35,15 @@
     "mysql": "^2.18.1",
     "net": "^1.0.2",
     "next": "12.1.6",
+    "promise-workers": "^2.0.2",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-virtualized": "^9.22.3",
     "sharp": "^0.30.6",
     "styled-components": "^5.3.5",
-    "tls": "^0.0.1"
+    "tls": "^0.0.1",
+    "ts-node": "^10.8.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.1.0",

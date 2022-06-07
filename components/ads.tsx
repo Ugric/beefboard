@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useState } from "react";
 
 const AdBanner = () => {
   useEffect(() => {
@@ -10,17 +11,21 @@ const AdBanner = () => {
       console.log(err);
     }
   }, []);
+  const [adNumber] = useState(
+    Math.random()
+  )
 
   return (
     <ins
       className="adsbygoogle"
       style={{
         display: "block",
+        width: "100%",
       }}
-      data-ad-format="fluid"
-      data-ad-layout-key="-ef+6k-30-ac+ty"
+      data-ad-format="auto"
+      data-full-width-responsive={true}
       data-ad-client="ca-pub-6522065990038784"
-      data-ad-slot="5682958907"
+      data-ad-slot={adNumber}
     />
   );
 };
