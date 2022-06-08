@@ -30,6 +30,7 @@ const db: {
     db.db.run(
       "CREATE TABLE IF NOT EXISTS file (fileID, filename, description)"
     ),
+    db.db.run("CREATE TABLE IF NOT EXISTS seen (UUID, postID, time)"),
   ]);
   db.queue = (
     callback: (db: Database<sqlite3.Database, sqlite3.Statement>) => void
@@ -41,11 +42,11 @@ const db: {
     callback(db.db);
   }
   if (await db.db.get("SELECT * FROM posts") == undefined) {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 1000; i++) {
       const id = Math.random().toString(36).substring(2);
       db.db.run(
         "INSERT INTO posts (UUID, postID, title, time) VALUES (?, ?, ?, ?)",
-        [0, id, "hello world", 0]
+        [0, id, String(i), 0]
       );
       db.db.run(
         "INSERT INTO postcontent (postID, type, content) VALUES (?, ?, ?)",

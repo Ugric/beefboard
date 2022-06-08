@@ -5,15 +5,17 @@ import { CSSProperties } from "styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import AdBanner from "./ads";
 import { useEffect, useRef } from "react";
+import { useState } from "react";
 
 type adsenseProps = {
   type: "adsense";
   id?: undefined;
   voted?: undefined;
-  adID: number
+  adID: number;
 };
 
 type watchtime = {
+  id: string;
   current?: HTMLDivElement;
   totalWatchtime: number;
   startTime?: number;
@@ -25,7 +27,7 @@ function distanceFromCenterOfWindowHeight(elm: HTMLDivElement) {
     document.documentElement.clientHeight,
     window.innerHeight
   );
-  return Math.abs(viewHeight / 3 - (rect.top + rect.height / 2));
+  return Math.abs(viewHeight / 3.75 - (rect.top + rect.height / 2));
 }
 
 function checkVisible(elm: HTMLDivElement) {
@@ -48,19 +50,22 @@ function Posts({
   hasMore: boolean;
   style?: CSSProperties;
 }) {
-  const currentPostScore = useRef<Record<string, watchtime>>({});
+  const currentPostScore = useRef<Record<number, watchtime>>({});
+  const [_, reload] = useState(0);
   useEffect(() => {
     for (let i = 0; i < posts.length; i++) {
       if (posts[i].type !== "adsense") {
-        currentPostScore.current[String(posts[i].id)] = {
-          totalWatchtime: currentPostScore.current[String(posts[i].id)]
-            ? currentPostScore.current[String(posts[i].id)].totalWatchtime
+        currentPostScore.current[i] = {
+          id: String(posts[i].id),
+          totalWatchtime: currentPostScore.current[i]
+            ? currentPostScore.current[i].totalWatchtime
             : 0,
-          current: currentPostScore.current[String(posts[i].id)]?.current,
-          startTime: currentPostScore.current[String(posts[i].id)]?.startTime,
+          current: currentPostScore.current[i]?.current,
+          startTime: currentPostScore.current[i]?.startTime,
         };
       }
     }
+    reload((n) => n + 1);
   }, [posts]);
   useEffect(() => {
     let watchtimetotal: Record<
@@ -74,45 +79,49 @@ function Posts({
       const browser_active = !document.hidden;
       const currentTime = Date.now();
       if (browser_active) {
-        let currentPostViewID: string | null = null;
+        let currentPostViewID: number | null = null;
         let distanceFromview = Infinity;
         for (const id of Object.keys(currentPostScore.current)) {
-          const element = currentPostScore.current[id].current;
-          const currentScore = currentPostScore.current[id]
+          const i: number = Number(id);
+          const element = currentPostScore.current[i]?.current;
+          const currentScore = currentPostScore.current[i];
           if (element) {
             if (checkVisible(element)) {
               const distance = distanceFromCenterOfWindowHeight(element);
               if (distanceFromview > distance) {
                 distanceFromview = distance;
-                currentPostViewID = id;
+                currentPostViewID = i;
                 continue;
               }
             }
-            if (currentScore.startTime) {
+            if (currentScore?.startTime) {
               const timespent = currentTime - currentScore.startTime;
               if (timespent >= 2500) {
                 currentScore.totalWatchtime += timespent;
-                if (watchtimetotal[id]) {
-                  watchtimetotal[id].time += timespent;
+                if (watchtimetotal[i]) {
+                  watchtimetotal[i].time += timespent;
                 } else {
-                  watchtimetotal[id] = {
-                    id: id,
+                  const postID = currentPostScore.current[i].id;
+                  watchtimetotal[i] = {
+                    id: postID,
                     time: timespent,
                   };
                 }
               }
               currentScore.startTime = undefined;
             }
+          } else {
           }
         }
-        const post = currentPostScore.current[String(currentPostViewID)];
+        const post = currentPostScore.current[Number(currentPostViewID)];
         if (currentPostViewID && post) {
           if (!post.startTime) {
-            post.startTime = Date.now()
+            post.startTime = Date.now();
           }
         }
       } else {
-        for (const id of Object.keys(currentPostScore.current)) {
+        for (const i of Object.keys(currentPostScore.current)) {
+          const id: number = Number(i);
           const currentScore = currentPostScore.current[id];
           if (currentScore.startTime) {
             const timespent = currentTime - currentScore.startTime;
@@ -121,8 +130,9 @@ function Posts({
               if (watchtimetotal[id]) {
                 watchtimetotal[id].time += timespent;
               } else {
+                const postID = currentPostScore.current[id].id;
                 watchtimetotal[id] = {
-                  id: id,
+                  id: postID,
                   time: timespent,
                 };
               }
@@ -166,7 +176,7 @@ function Posts({
         {posts.map((post, index) =>
           post.type == "adsense" ? (
             <div className={styles.post_outer_container} key={"ad-" + index}>
-              <div className={styles.post}>
+              <div className={styles.post + " ad"}>
                 <AdBanner adID={post.adID}></AdBanner>
               </div>
             </div>
@@ -174,7 +184,7 @@ function Posts({
             <Post
               post={post}
               key={index}
-              postRef={currentPostScore.current[post.id]}
+              postRef={currentPostScore.current[index]}
             />
           )
         )}

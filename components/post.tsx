@@ -100,7 +100,7 @@ function Post({
 
   return (
     <div className={styles.post_outer_container} ref={divref}>
-      <div className={styles.post}>
+      <div className={styles.post+' post'} id={"post-" + post.id}>
         <div className={styles.post_votes}>
           <button onClick={() => setVote(vote == 1 ? 0 : 1)}>
             <FontAwesomeIcon

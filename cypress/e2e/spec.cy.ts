@@ -3,6 +3,6 @@ describe('recommended page', () => {
     cy.visit('http://localhost:3000/')
   })
   it('has posts', () => {
-    cy.get(".posts_post__InXeP").first();
+    cy.get(".post").first().should('exist');
   })
 })
