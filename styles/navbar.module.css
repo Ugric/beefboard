@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  position: fixed;
+  position: sticky;
   width: 100%;
   top: 0;
   filter: drop-shadow(2px 4px 6px black);

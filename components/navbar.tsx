@@ -1,21 +1,10 @@
 import Logo from "./beefboard-logo";
 import styles from "../styles/navbar.module.css";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
-function Navbar({ setheight }: {
-  setheight: (height: number) => void;
-}) {
-  const height = useState(0)
+function Navbar() {
   const navbarref = useRef<any>(null);
-  useEffect(
-    () => {
-      if (navbarref.current) {
-        setheight(navbarref.current.offsetHeight);
-        height[1](navbarref.current.offsetHeight);
-      }
-    }
-  )
   return (
     <>
       <div className={styles.navbar_container} ref={navbarref}>
@@ -31,7 +20,6 @@ function Navbar({ setheight }: {
           </a>
         </Link>
       </div>
-      <div style={{ height: height[0] }}></div>
     </>
   );
 }

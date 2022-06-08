@@ -11,7 +11,8 @@ type ImageProps = {
 };
 
 type postProps = {
-  type?:undefined;
+  type?: undefined;
+  UUID: string;
   title: string;
   content: (string | ImageProps)[];
   votes: number;
@@ -20,8 +21,13 @@ type postProps = {
   id: string;
 };
 
-function formatNumber(num: number): string {
+function formatNumber(n: number): string {
+  let num = n
   let number = num;
+  if (number !== number) {
+    number = 0;
+    num = 0
+  }
   let suffix = "";
   if (num < 1000) {
     return num.toString();
@@ -49,6 +55,7 @@ function Post({
   };
 }) {
   const [vote, setVote] = useState(post.voted);
+  const [oldVote, setOldVote] = useState(post.voted);
   const [showmore, setShowMore] = useState(false);
   const [needstoshowmore, setneedsToShowMore] = useState<null | boolean>(null);
   const contentref = useRef<HTMLDivElement>(null);
@@ -65,6 +72,23 @@ function Post({
       new ResizeObserver(outputsize).observe(contentref.current);
     }
   }, []);
+
+  useEffect(() => {
+    if (vote != oldVote) {
+      setOldVote(vote);
+      fetch('/api/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: post.id,
+          vote: vote,
+        }),
+      });
+
+    }
+  }, [vote]);
 
   const divref = useRef<HTMLDivElement | null>(null);
 

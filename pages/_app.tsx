@@ -3,11 +3,9 @@ import type { AppProps } from "next/app";
 import "../styles/colour-palette.css";
 import Head from "next/head";
 import Navbar from "../components/navbar";
-import { useState } from "react";
 import Script from "next/script";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [navHeight, setNavHeight] = useState(0);
   return (
     <>
       <Head>
@@ -45,7 +43,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6522065990038784"
         crossOrigin="anonymous"
       ></Script>
-      <Navbar setheight={setNavHeight}></Navbar>
+      <Navbar></Navbar>
       <Component {...pageProps} />
     </>
   );

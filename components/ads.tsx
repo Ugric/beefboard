@@ -1,19 +1,20 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 
-const AdBanner = () => {
+const AdBanner = ({
+  adID
+}: {adID: number}) => {
   useEffect(() => {
-    try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(
-        {}
-      );
-    } catch (err) {
-      console.log(err);
+    if (typeof window !== "undefined") {
+      try {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(
+          {}
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   }, []);
-  const [adNumber] = useState(
-    Math.random()
-  )
 
   return (
     <ins
@@ -25,7 +26,7 @@ const AdBanner = () => {
       data-ad-format="auto"
       data-full-width-responsive={true}
       data-ad-client="ca-pub-6522065990038784"
-      data-ad-slot={adNumber}
+      data-ad-slot={adID}
     />
   );
 };

@@ -10,6 +10,7 @@ type adsenseProps = {
   type: "adsense";
   id?: undefined;
   voted?: undefined;
+  adID: number
 };
 
 type watchtime = {
@@ -166,7 +167,7 @@ function Posts({
           post.type == "adsense" ? (
             <div className={styles.post_outer_container} key={"ad-" + index}>
               <div className={styles.post}>
-                <AdBanner></AdBanner>
+                <AdBanner adID={post.adID}></AdBanner>
               </div>
             </div>
           ) : (
