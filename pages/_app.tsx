@@ -4,10 +4,14 @@ import "../styles/colour-palette.css";
 import Head from "next/head";
 import Navbar from "../components/navbar";
 import Script from "next/script";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <GoogleReCaptchaProvider
+      reCaptchaKey="6LcAbWEgAAAAAA3bHKz5gTM7fS1oQtfMHKlQst8r"
+      language="english"
+    >
       <Head>
         <link
           rel="apple-touch-icon"
@@ -45,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       ></Script>
       <Navbar></Navbar>
       <Component {...pageProps} />
-    </>
+    </GoogleReCaptchaProvider>
   );
 }
 

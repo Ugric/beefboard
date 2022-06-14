@@ -175,4 +175,4 @@ function Post({
 }
 
 export default Post;
-export type { postProps };
+export type { postProps, ImageProps };
