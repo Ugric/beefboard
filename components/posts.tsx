@@ -118,6 +118,7 @@ function Posts({
           if (!post.startTime) {
             post.startTime = Date.now();
           }
+        } else {
         }
       } else {
         for (const i of Object.keys(currentPostScore.current)) {

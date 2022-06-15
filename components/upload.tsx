@@ -3,12 +3,14 @@ import styles from "../styles/upload.module.css";
 import { useRef } from "react";
 import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import { useEffect } from "react";
-import { RefObject } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { MutableRefObject } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 function Upload() {
-    const tokenref = useRef<string | null>(null)
-    const inputref = useRef<(string | File | null)[]>([]);
+  const tokenref = useRef<string | null>(null);
+  const inputref = useRef<(string | File | null)[]>([]);
   return (
     <div>
       <GoogleReCaptcha
@@ -18,6 +20,57 @@ function Upload() {
       />
       <h1>Make Post</h1>
       <TextandFileUpload inputRefs={inputref}></TextandFileUpload>
+    </div>
+  );
+}
+
+function InputType({
+  index,
+  inputs,
+  setInputs,
+}: {
+  index: number;
+  inputs: (string | File | null)[];
+  setInputs: (inputs: (string | File | null)[]) => void;
+}) {
+  const input = inputs[index];
+  console.log(faTrash);
+  return (
+    <div>
+      {typeof input === "string" ? (
+        <TextareaAutosize
+          value={input}
+          className={styles.textarea}
+          onInput={(event) => {
+            setInputs(
+              inputs.map((input, i) =>
+                i === index
+                  ? (event.target as HTMLTextAreaElement).value
+                  : input
+              )
+            );
+          }}
+          key={index}
+        />
+      ) : (
+        <UploadFile
+          key={index}
+          onchange={(file) => {
+            setInputs(inputs.map((input, i) => (i === index ? file : input)));
+          }}
+        ></UploadFile>
+      )}
+      {inputs.length>1? (
+        <button
+          onClick={() => {
+            setInputs(inputs.filter((_, i) => i !== index));
+          }}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
@@ -33,7 +86,7 @@ function UploadFile({ onchange }: { onchange: (file: File | null) => void }) {
         type="file"
         onChange={(e) => {
           setFile(
-            e.target.files
+            e.target.files && e.target.files.length > 0
               ? {
                   file: e.target.files[0],
                   objsrc: URL.createObjectURL(e.target.files[0]),
@@ -47,14 +100,19 @@ function UploadFile({ onchange }: { onchange: (file: File | null) => void }) {
         }}
         ref={fileref}
       />
-          <div onClick={() => {
-            fileref.current?.click();
-      }} style={
-          {
-              cursor: "pointer",
-          }
-      }>
-        {file?<img src={file.objsrc} alt="file" className={styles.image} />:<p>Choose File</p>}
+      <div
+        onClick={() => {
+          fileref.current?.click();
+        }}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        {file ? (
+          <img src={file.objsrc} alt="file" className={styles.image} />
+        ) : (
+          <p>Choose File</p>
+        )}
       </div>
     </>
   );
@@ -74,31 +132,14 @@ function TextandFileUpload({
   }, [inputs, inputRefs, inputRefs.current]);
   return (
     <div>
-      {inputs.map((input, index) =>
-        typeof input === "string" ? (
-          <input
-            value={input}
-            onInput={(event) => {
-              setInputs(
-                inputs.map((input, i) =>
-                  i === index
-                    ? (event.target as HTMLTextAreaElement).value
-                    : input
-                )
-              );
-            }}
-            key={index}
-            className={styles.input}
-          />
-        ) : (
-          <UploadFile
-            key={index}
-            onchange={(file) => {
-              setInputs(inputs.map((input, i) => (i === index ? file : input)));
-            }}
-          ></UploadFile>
-        )
-      )}
+      {inputs.map((input, index) => (
+        <InputType
+          inputs={inputs}
+          setInputs={setInputs}
+          index={index}
+          key={index}
+        ></InputType>
+      ))}
     </div>
   );
 }

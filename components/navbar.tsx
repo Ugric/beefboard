@@ -9,7 +9,7 @@ function Navbar() {
     <>
       <div className={styles.navbar_container} ref={navbarref}>
         <Link href="/">
-          <a className={styles.logo}>
+          <a className={styles.logo + " " + styles.link}>
             <Logo width={50} />
             <div className={styles.big}>
               <h2 className={styles.name}>BeefBoard</h2>
