@@ -1,15 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Posts, { adsenseProps } from "../components/posts";
-import {  useEffect, useState } from "react";
+import {  useContext, useEffect, useState } from "react";
 import { postProps } from "../components/post";
-import LogRocket from "logrocket";
 import recommended from "../AI/recommended";
 import styles from "../styles/recommended.module.css";
-
-if (typeof window !== "undefined") {
-  LogRocket.init("beefboard/beefboard");
-}
+import axios from "axios";
+import {totalContext}from'./_app'
 
 const Home: NextPage<{ initposts: (postProps | adsenseProps)[] }> = ({
   initposts,
@@ -19,6 +16,7 @@ const Home: NextPage<{ initposts: (postProps | adsenseProps)[] }> = ({
   useEffect(() => {
     window.history.scrollRestoration = "manual";
   }, []);
+  const {CurrentImportance, setProgress} = useContext(totalContext);
   return (
     <>
       <Head>
@@ -28,10 +26,15 @@ const Home: NextPage<{ initposts: (postProps | adsenseProps)[] }> = ({
         posts={posts}
         hasMore={hasMore}
         next={async () => {
-          const data = await fetch("/api/recommended");
-          const newposts: (postProps | adsenseProps)[] = await data.json();
+          const importance = CurrentImportance.current + 1
+          setProgress(0, importance)
+          const data = await axios.get(
+            '/api/recommended',
+          )
+          const newposts: (postProps | adsenseProps)[] = data.data;
           setHasMore(newposts.length != 0);
           setPosts([...posts, ...newposts]);
+          setProgress(1, importance);
         }}
       />
       {!hasMore ? <h1 className={
