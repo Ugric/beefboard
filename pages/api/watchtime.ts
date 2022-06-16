@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import cookieParser = require("cookie-parser");
+import cookieParser  from "cookie-parser";
 
 type watchtimeReqData = {
   watchtime: string;
