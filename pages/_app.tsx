@@ -92,6 +92,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#2c2c2c" />
         <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
         <meta name="theme-color" content="#2c2c2c" />
+        <meta
+          name="google-site-verification"
+          content="LR10LkgxoTHwKa2T95YeKrT2R9f1bJbEDLvhpLG6eCM"
+        />
       </Head>
       <Script
         async
