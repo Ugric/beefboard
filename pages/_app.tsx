@@ -5,7 +5,6 @@ import Head from "next/head";
 import Navbar from "../components/navbar";
 import Script from "next/script";
 import LogRocket from "logrocket";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import TopScreenProcessing from "../components/TopScreenProcessing";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { RecaptchaProvider } from "../components/recaptcha_client";

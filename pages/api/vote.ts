@@ -4,11 +4,6 @@ import cookieParser from "cookie-parser";
 import { db } from "../../database/database";
 import testRECAP3 from "../../components/recaptcha_server";
 
-type watchtimeReqData = {
-  watchtime: string;
-  recaptcha: string;
-};
-
 const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   onError(error, _, res) {
     res
