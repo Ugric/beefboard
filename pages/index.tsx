@@ -16,7 +16,8 @@ const Home: NextPage<{ initposts: (postProps | adsenseProps)[] }> = ({
   useEffect(() => {
     window.history.scrollRestoration = "manual";
   }, []);
-  const {CurrentImportance, setProgress} = useContext(totalContext);
+  const { CurrentImportance, setProgress, noAnimation, currentProgress } =
+    useContext(totalContext);
   return (
     <>
       <Head>
@@ -27,6 +28,7 @@ const Home: NextPage<{ initposts: (postProps | adsenseProps)[] }> = ({
         hasMore={hasMore}
         next={async () => {
           const importance = CurrentImportance.current + 1
+          noAnimation(importance);
           setProgress(0, importance)
           const data = await axios.get(
             '/api/recommended',

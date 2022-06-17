@@ -8,25 +8,43 @@ import LogRocket from "logrocket";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import TopScreenProcessing from "../components/TopScreenProcessing";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { RecaptchaProvider } from "../components/recaptcha_client";
 
 if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   LogRocket.init("beefboard/beefboard");
 }
 
 const totalContext = createContext({
-  setProgress: (progress: number, importance: number) => { },
+  setProgress: (progress: number, importance: number) => {},
   CurrentImportance: {
     current: 0,
   },
+  currentProgress: {
+    current: 0,
+  },
+  noAnimation: (importance: number) => {},
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [progress, setProgressNum] = useState(0)
+  const currentProgress = useRef(0)
+  useEffect(() => {
+    currentProgress.current = progress
+  }, [progress])
+  const [progresskey, setprogresskey] = useState(0)
+  const noAnimation = useCallback((importance: number) => {
+    if (importance >= currentImportance.current) {
+      currentImportance.current = importance;
+      setprogresskey((progresskey) => progresskey + 1);
+    }
+  }, []);
   const currentImportance = useRef(0)
   useEffect(() => {
+    const animation = setInterval(() => setProgressNum(progress=>progress+((1-progress)/2)), 0);
     const load = () => {
-      setProgress(1,0);
+      setProgressNum(1)
       window.removeEventListener("load", load);
+      clearInterval(animation);
     };
     window.addEventListener('load', load)
   },[])
@@ -37,17 +55,15 @@ function MyApp({ Component, pageProps }: AppProps) {
         setProgressNum(progress);
         if (progress >= 1) {
           setTimeout(() => {
+            noAnimation(importance)
             setProgress(0, importance)
-          }, 1500);
+          }, 1000);
         }
       }
     }, [])
 
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey="6LcAbWEgAAAAAA3bHKz5gTM7fS1oQtfMHKlQst8r"
-      language="english"
-    >
+    <>
       <Head>
         <link
           rel="apple-touch-icon"
@@ -81,19 +97,22 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Script
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6522065990038784"
-        crossOrigin="anonymous"
       ></Script>
-      <TopScreenProcessing progress={progress} />
+      <TopScreenProcessing progress={progress} key={progresskey} />
       <Navbar></Navbar>
-      <totalContext.Provider
-        value={{
-          setProgress,
-          CurrentImportance: currentImportance,
-        }}
-      >
-        <Component {...pageProps} />
-      </totalContext.Provider>
-    </GoogleReCaptchaProvider>
+      <RecaptchaProvider site_key="6LcAbWEgAAAAAA3bHKz5gTM7fS1oQtfMHKlQst8r">
+        <totalContext.Provider
+          value={{
+            setProgress,
+            CurrentImportance: currentImportance,
+            noAnimation,
+            currentProgress,
+          }}
+        >
+          <Component {...pageProps} />
+        </totalContext.Provider>
+      </RecaptchaProvider>
+    </>
   );
 }
 

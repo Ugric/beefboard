@@ -4,11 +4,12 @@ import type { postProps } from "./post";
 import { CSSProperties } from "styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import AdBanner from "./ads";
-import { useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { useState } from "react";
 import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import { watchtimeReqData } from "../pages/api/watchtime";
 import axios from "axios";
+import { useRecaptcha } from "./recaptcha_client";
 
 type adsenseProps = {
   type: "adsense";
@@ -149,10 +150,10 @@ function Posts({
     setTimeout(() => watchtimeCalculator(), 0);
     window.addEventListener("scroll", watchtimeCalculator);
     const checkloop = setInterval(watchtimeCalculator, 1000);
-    const sendloop = setInterval(() => {
-      if (Object.keys(watchtimetotal).length > 0 && token.current) {
+    const sendloop = setInterval(async () => {
+      if (Object.keys(watchtimetotal).length > 0) {
         const formdata = new FormData();
-        formdata.append("recaptcha", token.current);
+        formdata.append("recaptcha", await maketoken());
         formdata.append("watchtime", JSON.stringify(watchtimetotal));
         axios.post("/api/watchtime", formdata, {
           headers: {
@@ -168,14 +169,9 @@ function Posts({
       window.removeEventListener("scroll", watchtimeCalculator);
     };
   }, []);
-  const token = useRef<string>("");
+  const maketoken = useRecaptcha()
   return (
     <div className={styles.post_container} style={style}>
-      <GoogleReCaptcha
-        onVerify={(t) => {
-          token.current = t;
-        }}
-      ></GoogleReCaptcha>
       <InfiniteScroll
         dataLength={posts.length}
         next={next}

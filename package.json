@@ -26,6 +26,7 @@
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "cypress": "^10.0.3",
+    "dotenv": "^16.0.1",
     "express-fileupload": "^1.4.0",
     "faker": "^6.6.6",
     "formidable": "^2.0.1",

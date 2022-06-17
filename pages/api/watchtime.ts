@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nextConnect from "next-connect";
-import cookieParser  from "cookie-parser";
+import cookieParser from "cookie-parser";
+import { db } from "../../database/database";
 
 type watchtimeReqData = {
   watchtime: string;
@@ -22,12 +23,26 @@ apiRoute.use(require("morgan")("combined"));
 apiRoute.use(cookieParser());
 apiRoute.use(require("express-fileupload")());
 
-
-apiRoute.post((req, res) => {
+apiRoute.post(async (req, res) => {
   const body: watchtimeReqData = req.body;
   const recaptcha = body.recaptcha;
-  const watchtime = (JSON.parse(body.watchtime));
-  res.status(200).json({ data: "success" });
+  const watchtime: Record<
+    string,
+    {
+      id: string;
+      time: number;
+    }
+  > = JSON.parse(body.watchtime);
+  await Promise.all(
+    Object.entries(watchtime).map(async ([id, { time }]) => {
+      await db.up();
+      await db.db?.run(
+        `INSERT INTO watchtime (UUID, postID, time) VALUES (?, ?, ?)`,
+        ["0", id, time]
+      );
+    })
+  );
+  res.status(200).send(undefined);
 });
 
 export default apiRoute;

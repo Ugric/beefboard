@@ -1,8 +1,10 @@
 import styles from "../styles/posts.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { LegacyRef, useEffect, useRef, useState } from "react";
+import { LegacyRef, useContext, useEffect, useRef, useState } from "react";
 import ResponsiveImage from "./responsiveImage";
+import axios from "axios";
+import { useRecaptcha } from "./recaptcha_client";
 
 type ImageProps = {
   src: string;
@@ -22,11 +24,11 @@ type postProps = {
 };
 
 function formatNumber(n: number): string {
-  let num = n
+  let num = n;
   let number = num;
   if (number !== number) {
     number = 0;
-    num = 0
+    num = 0;
   }
   let suffix = "";
   if (num < 1000) {
@@ -72,21 +74,30 @@ function Post({
       new ResizeObserver(outputsize).observe(contentref.current);
     }
   }, []);
-
+  const maketoken = useRecaptcha()
   useEffect(() => {
     if (vote != oldVote) {
       setOldVote(vote);
-      fetch('/api/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: post.id,
-          vote: vote,
-        }),
-      });
-
+      (async () => {
+          const formData = new FormData();
+          formData.append("id", post.id);
+          formData.append("vote", JSON.stringify(vote));
+          formData.append("recaptcha", await maketoken());
+          const resp = await axios.post("/api/vote", formData).catch(() => {
+        setVote(0);
+            setOldVote(0);
+            return {
+              status: 400,
+            }
+          }
+          );
+          if (resp.status === 200) {
+            return;
+          }
+        
+        setVote(0);
+        setOldVote(0);
+      })();
     }
   }, [vote]);
 
@@ -100,7 +111,7 @@ function Post({
 
   return (
     <div className={styles.post_outer_container} ref={divref}>
-      <div className={styles.post+' post'} id={"post-" + post.id}>
+      <div className={styles.post + " post"} id={"post-" + post.id}>
         <div className={styles.post_votes}>
           <button onClick={() => setVote(vote == 1 ? 0 : 1)}>
             <FontAwesomeIcon
