@@ -27,6 +27,7 @@
 
 .text {
   padding: 1rem;
+  white-space: pre-wrap;
   color: var(--secondary-text-colour);
 }
 

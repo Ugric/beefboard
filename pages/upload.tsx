@@ -3,9 +3,7 @@ import Upload from "../components/upload";
 
 const Uploadpage: NextPage = () => {
   return (
-      <>
-          <Upload></Upload>
-    </>
+        <Upload></Upload>
   );
 };
 

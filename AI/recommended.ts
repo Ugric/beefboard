@@ -79,7 +79,7 @@ async function recommended(UUID: string) {
       type: "text" | "image";
       content: string;
     }[] = await db.db!.all(
-      "SELECT * FROM postcontent WHERE postID = ?",
+      "SELECT * FROM postcontent WHERE postID = ? ORDER BY setorder ASC",
       post.postID,
     );
     const content = postContent.map((content) =>
@@ -122,7 +122,7 @@ async function recommended(UUID: string) {
       time: post.time,
       content,
       votes,
-      voted: vote as 1 | 0 | -1,
+      voted: Number(vote) as 1 | 0 | -1,
     });
   }
 

@@ -25,11 +25,12 @@ const db: {
   await Promise.all([
     db.db.run("CREATE TABLE IF NOT EXISTS watchtime (UUID, postID, time)"),
     db.db.run("CREATE TABLE IF NOT EXISTS posts (UUID, postID, title, time)"),
-    db.db.run("CREATE TABLE IF NOT EXISTS postcontent (postID, type, content)"),
-    db.db.run("CREATE TABLE IF NOT EXISTS postvotes (postID, UUID, vote)"),
     db.db.run(
-      "CREATE TABLE IF NOT EXISTS file (fileID, filename, description)"
+      "CREATE TABLE IF NOT EXISTS postcontent (postID, type, content, setorder)"
     ),
+    db.db.run("CREATE TABLE IF NOT EXISTS postvotes (postID, UUID, vote)"),
+    db.db.run("CREATE TABLE IF NOT EXISTS file (fileID, filename, realfilename, contenttype)"),
+    db.db.run("CREATE TABLE IF NOT EXISTS fileReferance (ReferenceID, fileID)"),
     db.db.run("CREATE TABLE IF NOT EXISTS seen (UUID, postID, time)"),
   ]);
   db.queue = (
@@ -40,19 +41,6 @@ const db: {
   db.up = async ()=>db.db!
   for (const callback of queue) {
     callback(db.db);
-  }
-  if (await db.db.get("SELECT * FROM posts") == undefined) {
-    for (let i = 0; i < 1000; i++) {
-      const id = Math.random().toString(36).substring(2);
-      db.db.run(
-        "INSERT INTO posts (UUID, postID, title, time) VALUES (?, ?, ?, ?)",
-        [0, id, String(i), 0]
-      );
-      db.db.run(
-        "INSERT INTO postcontent (postID, type, content) VALUES (?, ?, ?)",
-        [id, "text", "hello world"]
-      );
-    }
   }
 })();
 

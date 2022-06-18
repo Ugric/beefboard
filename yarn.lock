@@ -670,6 +670,13 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/busboy@^0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@types/busboy/-/busboy-0.3.2.tgz#2f29b017513415399c42632ae6a7cfcb1409b79c"
+  integrity sha512-iEvdm9Z9KdSs/ozuh1Z7ZsXrOl8F4M/CLMXPZHr3QuJ4d6Bjn+HBMC5EMKpwpAo8oi8iK9GZfFoHaIMrrZgwVw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/connect@*":
   version "3.4.35"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.35.tgz#5fcf6ae445e4021d1fc2219a4873cc73a3bb2ad1"
@@ -682,6 +689,14 @@
   resolved "https://registry.yarnpkg.com/@types/cookie-parser/-/cookie-parser-1.4.3.tgz#3a01df117c5705cf89a84c876b50c5a1fd427a21"
   integrity sha512-CqSKwFwefj4PzZ5n/iwad/bow2hTCh0FlNAeWLtQM3JA/NX/iYagIpWG2cf1bQKQ2c9gU2log5VUCrn7LDOs0w==
   dependencies:
+    "@types/express" "*"
+
+"@types/express-fileupload@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/express-fileupload/-/express-fileupload-1.2.2.tgz#98c10e900c222744bba16c848505a1fa95ab3ff0"
+  integrity sha512-sWU1EVFfLsdAginKVrkwTRbRPnbn7dawxEFEBgaRDcpNFCUuksZtASaAKEhqwEIg6fSdeTyI6dIUGl3thhrypg==
+  dependencies:
+    "@types/busboy" "^0"
     "@types/express" "*"
 
 "@types/express-serve-static-core@^4.17.18":
@@ -1338,6 +1353,11 @@ bl@^4.0.3:
     buffer "^5.5.0"
     inherits "^2.0.4"
     readable-stream "^3.4.0"
+
+blob-to-hash@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/blob-to-hash/-/blob-to-hash-0.0.1.tgz#121d8738d40a77325ff47d22536702bc8559884d"
+  integrity sha512-V9N46n90/oa7U+GSYo1lZfPmn9DDVUP//eqy3jErzaTglI2o6SNsUtcNqfH79tBbUaVnx6XNJRGG8LTyb/hxCQ==
 
 blob-util@^2.0.2:
   version "2.0.2"

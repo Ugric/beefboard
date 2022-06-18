@@ -6,16 +6,16 @@ import testRECAP3 from "../../components/recaptcha_server";
 
 const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   onError(error, _, res) {
-    res
-      .status(501)
-      .json({ error: `Sorry something Happened! ${error.message}` });
+    res.status(501).json({
+      err: `Sorry, there was an internal server error! Please try again later.`,
+    });
+    console.error(error);
   },
   onNoMatch(req, res) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    res.status(405).json({ err: `Method '${req.method}' Not Allowed` });
   },
 });
 
-apiRoute.use(require("morgan")("combined"));
 apiRoute.use(cookieParser());
 apiRoute.use(require("express-fileupload")());
 
@@ -23,15 +23,16 @@ apiRoute.post(async (req, res) => {
   if (req.method == "POST") {
     const data: {
       id: string;
-      vote: number;
+      vote: string;
       recaptcha: string;
     } = req.body;
+    const vote = JSON.parse(data.vote);
     await db.up();
     const recaptcha = await testRECAP3(data.recaptcha);
-    if (recaptcha) {
+    if (recaptcha && [-1, 0, 1].includes(vote)) {
       await db.db?.run(
         `INSERT INTO postvotes (UUID, postID, vote) VALUES (?, ?, ?)`,
-        ["0", data.id, data.vote]
+        ["0", data.id, vote]
       );
       return res.status(200).send(undefined);
     }

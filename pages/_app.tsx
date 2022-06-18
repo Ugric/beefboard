@@ -8,20 +8,21 @@ import LogRocket from "logrocket";
 import TopScreenProcessing from "../components/TopScreenProcessing";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { RecaptchaProvider } from "../components/recaptcha_client";
+import axios from "axios";
 
 if (typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   LogRocket.init("beefboard/beefboard");
 }
 
 const totalContext = createContext({
-  setProgress: (progress: number, importance: number) => {},
+  setProgress: (_progress: number, _importance: number) => {},
   CurrentImportance: {
     current: 0,
   },
   currentProgress: {
     current: 0,
   },
-  noAnimation: (importance: number) => {},
+  noAnimation: (_importance: number) => {},
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
