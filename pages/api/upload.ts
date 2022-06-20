@@ -10,6 +10,7 @@ import fileupload from "express-fileupload";
 type uploadContext = {
   type: string;
   content: string | number;
+  alt?: string;
 }[];
 const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   onError(error, _, res) {
@@ -38,10 +39,10 @@ apiRoute.post(async (req, res) => {
   if (recaptcha) {
     const postID = genRand(11);
     await db.up();
-    await Promise.all([
-      ...content.map(async ({ type, content }, index) => {
+    await Promise.all(
+      content.map(async ({ type, content, alt }, index) => {
         await db.db?.run(
-          `INSERT INTO postcontent (postID, type, content, setorder) VALUES (?, ?, ?, ?)`,
+          `INSERT INTO postcontent (postID, type, content, alt, setorder) VALUES (?, ?, ?, ?, ?)`,
           [
             postID,
             type,
@@ -55,11 +56,12 @@ apiRoute.post(async (req, res) => {
                   return fileID;
               }
             })(),
+            alt,
             index,
           ]
         );
-      }),
-    ]);
+      })
+    );
     await db.db?.run(
       `INSERT INTO posts (UUID, postID, title, time) VALUES (?, ?, ?, ?)`,
       ["0", postID, body.title, Date.now()]

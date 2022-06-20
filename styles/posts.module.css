@@ -13,6 +13,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  word-break: break-all;
   color: var(--primary-text-colour);
   margin: 2rem auto;
 }
@@ -74,8 +75,9 @@
   color: #da2d2d;
 }
 
-.image {
+.file {
   width: 100%;
+  margin: auto;
   padding: 1rem;
 }
 

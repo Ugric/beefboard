@@ -14,7 +14,10 @@ import { uploadContext } from "../pages/api/upload";
 import axios from "axios";
 import { useRecaptcha } from "./recaptcha_client";
 
-type inputArray = { val: string | File | null; key: number }[];
+type inputArray = {
+  val: string | { file: File | null; alt: string };
+  key: number;
+}[];
 
 function InputType({
   index,
@@ -71,24 +74,25 @@ function InputType({
           onchange={(file) => {
             setInputs(
               inputs.map((input, i) =>
-                i === index ? { val: file, key: input.key } : input
+                i === index
+                  ? {
+                      val: file,
+                      key: input.key,
+                    }
+                  : input
               )
             );
           }}
         ></UploadFile>
       )}
-      {inputs.length > 1 ? (
-        <button
-          onClick={() => {
-            setInputs(inputs.filter((_, i) => i !== index));
-          }}
-          className={styles.delete_button}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      ) : (
-        <></>
-      )}
+      <button
+        onClick={() => {
+          setInputs(inputs.filter((_, i) => i !== index));
+        }}
+        className={styles.delete_button}
+      >
+        <FontAwesomeIcon icon={faTrash} />
+      </button>
     </div>
   );
 }
@@ -97,13 +101,19 @@ function UploadFile({
   onchange,
   defaultfile,
 }: {
-  onchange: (file: File | null) => void;
-  defaultfile: File | null;
+  onchange: (file: { file: File | null; alt: string }) => void;
+  defaultfile: {
+    file: File | null;
+    alt: string;
+  };
 }) {
   console.log(File);
   const [file, setFile] = useState<{ file: File; objsrc: string } | null>(
-    defaultfile
-      ? { file: defaultfile, objsrc: URL.createObjectURL(defaultfile) }
+    defaultfile.file
+      ? {
+          file: defaultfile.file,
+          objsrc: URL.createObjectURL(defaultfile.file),
+        }
       : null
   );
   const fileref = useRef<HTMLInputElement>(null);
@@ -120,25 +130,70 @@ function UploadFile({
                 }
               : null
           );
-          onchange(e.target.files ? e.target.files?.[0] : null);
+          onchange({
+            file: e.target.files ? e.target.files?.[0] : null,
+            alt: "",
+          });
         }}
         style={{
           display: "none",
         }}
         ref={fileref}
       />
-      <div
-        onClick={() => {
-          fileref.current?.click();
-        }}
-        className={styles.file_container}
-      >
+      <div className={styles.file_container}>
         {file ? (
-          <img src={file.objsrc} alt="file" className={styles.image} />
+          <div
+            onClick={() => {
+              fileref.current?.click();
+            }}
+          >
+            Change File
+          </div>
         ) : (
-          <span>
-            <FontAwesomeIcon icon={faPlusCircle} /> Add File
+          <></>
+        )}
+        {file ? (
+          file.file.type.includes("image") ? (
+            <img
+              src={file.objsrc}
+              alt={defaultfile.alt}
+              className={styles.file}
+            />
+          ) : file.file.type.includes("video") ? (
+            <video src={file.objsrc} controls className={styles.file} />
+          ) : file.file.type.includes("audio") ? (
+            <audio src={file.objsrc} controls className={styles.file} />
+          ) : (
+            <p>Downloadable File</p>
+          )
+        ) : (
+          <span
+            onClick={() => {
+              fileref.current?.click();
+            }}
+          >
+              <FontAwesomeIcon style={{
+              width: '1rem'
+            }} icon={faPlusCircle} /> Add File
           </span>
+        )}
+        {file &&
+        !file.file.type.includes("video") &&
+        !file.file.type.includes("audio") ? (
+          <input
+            type="text"
+            placeholder="a name or description... used for alt tag in image, or title for downloadable files (optional)"
+            className={styles.alt_input}
+            onInput={(e) => {
+              onchange({
+                file: file.file,
+                alt: (e.target as HTMLInputElement).value,
+              });
+            }}
+              value={defaultfile.alt}
+          />
+        ) : (
+          <></>
         )}
       </div>
     </>
@@ -148,12 +203,10 @@ function UploadFile({
 function Upload() {
   const [title, setTitle] = useState("");
   const keyref = useRef(1);
-  const [inputs, setInputs] = useState<inputArray>([
-    { val: "", key: keyref.current++ },
-  ]);
+  const [inputs, setInputs] = useState<inputArray>([]);
   const [error, seterror] = useState("");
   const [uploading, setUploading] = useState(false);
-  const maketoken = useRecaptcha()
+  const maketoken = useRecaptcha();
   const { noAnimation, CurrentImportance, setProgress } =
     useContext(totalContext);
   return (
@@ -200,7 +253,16 @@ function Upload() {
           <button
             className={styles.add_button}
             onClick={() => {
-              setInputs([...inputs, { val: null, key: keyref.current++ }]);
+              setInputs([
+                ...inputs,
+                {
+                  val: {
+                    file: null,
+                    alt: "",
+                  },
+                  key: keyref.current++,
+                },
+              ]);
             }}
           >
             Add File
@@ -209,67 +271,71 @@ function Upload() {
         {error != "" ? <p className={styles.upload_error}>{error}</p> : <></>}
         <div className={styles.upload_container}>
           <button
-            onClick={async() => {
+            onClick={async () => {
               if (title != "") {
-                if (
-                  inputs.filter((input) => input.val != null && input.val != "")
-                    .length == inputs.length
-                ) {
-                  const importance = CurrentImportance.current + 1;
-                  noAnimation(importance);
-                  setProgress(0, importance);
-                  setUploading(true);
-                  const formData = new FormData();
-                  formData.append("title", title);
-                  const content: uploadContext = [];
-                  let fileID = 0;
-                  inputs.forEach((input, index) => {
-                    if (input.val != null && typeof input.val != "string") {
-                      formData.append(`file${index}`, input.val);
-                      content.push({
-                        type: "file",
-                        content: index,
-                      });
-                      fileID++;
-                    } else if (typeof input.val == "string") {
-                      content.push({
-                        type: "text",
-                        content: input.val,
-                      });
-                    }
-                  });
-                  formData.append("recaptcha",await maketoken());
-                  formData.append("content", JSON.stringify(content));
-                  axios.post(
-                    '/api/upload',
-                    formData,
-                    {
-                      headers: {
-                        "Content-Type": "multipart/form-data",
-                      },
-                      onUploadProgress: (progressEvent) => {
-                        setProgress(
-                          (progressEvent.loaded/progressEvent.total)/1.1,
-                          importance
-                        );
+                if (inputs.length > 0) {
+                  if (
+                    inputs.filter(
+                      (input) =>
+                        input.val != "" &&
+                        (typeof input.val === "string" ||
+                          input.val.file != null)
+                    ).length == inputs.length
+                  ) {
+                    const importance = CurrentImportance.current + 1;
+                    noAnimation(importance);
+                    setProgress(0, importance);
+                    setUploading(true);
+                    const formData = new FormData();
+                    formData.append("title", title);
+                    const content: uploadContext = [];
+                    let fileID = 0;
+                    inputs.forEach((input) => {
+                      if (input.val != null && typeof input.val != "string") {
+                        formData.append(`file${fileID}`, input.val.file!);
+                        content.push({
+                          type: "file",
+                          content: fileID,
+                          alt: input.val.alt,
+                        });
+                        fileID++;
+                      } else if (typeof input.val == "string") {
+                        content.push({
+                          type: "text",
+                          content: input.val,
+                        });
                       }
-                    }
-                  ).then((data) => {
-                    setUploading(false);
-                    setProgress(1, importance);
-                    setTitle('')
-                    setInputs(
-                      [{ val: "", key: 0 }]
-                    )
-                  }).catch((err) => {
-                    setUploading(false);
-                    setProgress(1, importance);
-                    seterror(
-                      err?.response?.data?.err || String(err)
-                    );
-                  })
+                    });
+                    formData.append("recaptcha", await maketoken());
+                    formData.append("content", JSON.stringify(content));
+                    axios
+                      .post("/api/upload", formData, {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                        onUploadProgress: (progressEvent) => {
+                          setProgress(
+                            progressEvent.loaded / progressEvent.total / 1.1,
+                            importance
+                          );
+                        },
+                      })
+                      .then((data) => {
+                        setUploading(false);
+                        setProgress(1, importance);
+                        setTitle("");
+                        setInputs([{ val: "", key: 0 }]);
+                      })
+                      .catch((err) => {
+                        setUploading(false);
+                        setProgress(1, importance);
+                        seterror(err?.response?.data?.err || String(err));
+                      });
+                  } else {
+                    seterror("You need to add all the descriptions and files");
+                  }
                 } else {
-                  seterror("You need to add all the descriptions and files");
+                  seterror("You need to add at least one description or file");
                 }
               } else {
                 seterror("Please enter a title");

@@ -1,4 +1,4 @@
-.image {
+.file {
   width: 100%;
   padding: 1rem;
 }
@@ -69,7 +69,7 @@
   margin: auto;
 }
 .outer_container {
-    margin: 2rem 1rem;
+  margin: 2rem 1rem;
 }
 
 .add_container {
@@ -83,8 +83,11 @@
 }
 
 .file_container {
-    margin: auto;
-    cursor: pointer;
+  margin: auto;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  margin: 1rem auto;
 }
 
 .add_button {
@@ -117,10 +120,18 @@
   cursor: pointer;
   background-color: transparent;
   color: var(--secondary-text-colour);
-  width:50px;
+  width: 50px;
 }
 
 .upload_error {
-    text-align: center;
-    color: red;
+  text-align: center;
+  color: red;
+}
+.alt_input {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  color: var(--secondary-text-colour);
+  outline: none;
+  text-align: center;
 }

@@ -26,11 +26,11 @@ const db: {
     db.db.run("CREATE TABLE IF NOT EXISTS watchtime (UUID, postID, time)"),
     db.db.run("CREATE TABLE IF NOT EXISTS posts (UUID, postID, title, time)"),
     db.db.run(
-      "CREATE TABLE IF NOT EXISTS postcontent (postID, type, content, setorder)"
+      "CREATE TABLE IF NOT EXISTS postcontent (postID, type, content, alt, setorder)"
     ),
     db.db.run("CREATE TABLE IF NOT EXISTS postvotes (postID, UUID, vote)"),
-    db.db.run("CREATE TABLE IF NOT EXISTS file (fileID, filename, realfilename, contenttype)"),
-    db.db.run("CREATE TABLE IF NOT EXISTS fileReferance (ReferenceID, fileID)"),
+    db.db.run("CREATE TABLE IF NOT EXISTS file (hash, filename, realfilename, contenttype)"),
+    db.db.run("CREATE TABLE IF NOT EXISTS fileReferance (ReferenceID, hash)"),
     db.db.run("CREATE TABLE IF NOT EXISTS seen (UUID, postID, time)"),
   ]);
   db.queue = (

@@ -1,22 +1,21 @@
 import styles from "../styles/posts.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { LegacyRef, useContext, useEffect, useRef, useState } from "react";
-import ResponsiveImage from "./responsiveImage";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useRecaptcha } from "./recaptcha_client";
 
-type ImageProps = {
-  src: string;
+type FileProp = {
+  id: string;
   alt: string;
-  aspectRatio: number;
+  type: "image" | "video" | "audio" | "file";
 };
 
 type postProps = {
   type?: undefined;
   UUID: string;
   title: string;
-  content: (string | ImageProps)[];
+  content: (string | FileProp)[];
   votes: number;
   time: number;
   voted: 1 | 0 | -1;
@@ -74,27 +73,26 @@ function Post({
       new ResizeObserver(outputsize).observe(contentref.current);
     }
   }, []);
-  const maketoken = useRecaptcha()
+  const maketoken = useRecaptcha();
   useEffect(() => {
     if (vote != oldVote) {
       setOldVote(vote);
       (async () => {
-          const formData = new FormData();
-          formData.append("id", post.id);
-          formData.append("vote", JSON.stringify(vote));
-          formData.append("recaptcha", await maketoken());
-          const resp = await axios.post("/api/vote", formData).catch(() => {
-        setVote(0);
-            setOldVote(0);
-            return {
-              status: 400,
-            }
-          }
-          );
-          if (resp.status === 200) {
-            return;
-          }
-        
+        const formData = new FormData();
+        formData.append("id", post.id);
+        formData.append("vote", JSON.stringify(vote));
+        formData.append("recaptcha", await maketoken());
+        const resp = await axios.post("/api/vote", formData).catch(() => {
+          setVote(0);
+          setOldVote(0);
+          return {
+            status: 400,
+          };
+        });
+        if (resp.status === 200) {
+          return;
+        }
+
         setVote(0);
         setOldVote(0);
       })();
@@ -159,14 +157,54 @@ function Post({
                   </p>
                 );
               } else {
-                return (
-                  <ResponsiveImage
+                return content.type == "image" ? (
+                  <img
+                    src={
+                      "/api/file?" +
+                      new URLSearchParams({
+                        id: content.id,
+                      })
+                    }
+                    alt={content.alt||"image"}
+                    className={styles.file}
                     key={index}
-                    src={content.src}
-                    alt={content.alt}
-                    className={styles.image}
-                    aspectRatio={content.aspectRatio}
                   />
+                ) : content.type == "video" ? (
+                  <video
+                    src={
+                      "/api/file?" +
+                      new URLSearchParams({
+                        id: content.id,
+                      })
+                    }
+                    className={styles.file}
+                    controls
+                    key={index}
+                  />
+                ) : content.type == "audio" ? (
+                  <audio
+                    src={
+                      "/api/file?" +
+                      new URLSearchParams({
+                        id: content.id,
+                      })
+                    }
+                    className={styles.file}
+                    controls
+                    key={index}
+                  />
+                ) : (
+                  <a
+                    href={
+                      "/api/file?" +
+                      new URLSearchParams({
+                        id: content.id,
+                      })
+                    }
+                    key={index}
+                  >
+                    {content.alt||"Attached File"}
+                  </a>
                 );
               }
             })}
@@ -186,4 +224,4 @@ function Post({
 }
 
 export default Post;
-export type { postProps, ImageProps };
+export type { postProps, FileProp };

@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
-import { postProps } from "../components/post";
+import { FileProp, postProps } from "../components/post";
 import { adsenseProps } from "../components/posts";
 import { fork } from "child_process";
 import BlastAI, { node } from "./BLASTAI";
 import { db } from "../database/database";
 import { readFile } from "fs/promises";
-import { ImageProps } from "next/image";
+import { getFileData } from "../database/file";
 
 if (typeof window !== "undefined") {
   while (true) {
@@ -62,7 +62,7 @@ if (process.env.NODE_ENV === "production" && runAI) {
   });
 }
 
-type postcontent = string | ImageProps;
+type postcontent = string | FileProp;
 
 async function recommended(UUID: string) {
   await db.up();
@@ -75,21 +75,42 @@ async function recommended(UUID: string) {
   const chosenPosts: (postProps | adsenseProps)[] = [];
   for (const post of posts) {
     const postContent: {
+      type: string;
       postID: string;
-      type: "text" | "image";
+      contenttype: string;
       content: string;
+      alt: string;
     }[] = await db.db!.all(
       "SELECT * FROM postcontent WHERE postID = ? ORDER BY setorder ASC",
-      post.postID,
+      post.postID
     );
-    const content = postContent.map((content) =>
-      content.type === "text"
-        ? content.content
-        : {
-            src: content.content,
-            alt: "image",
-            aspectRatio: 1,
-          }
+    const content: postcontent[] = await Promise.all(
+      postContent.map(async (content) =>
+        content.type === "text"
+          ? content.content
+          : await (async () => {
+              const file = await getFileData(content.content);
+              if (file) {
+                return {
+                  id: content.content,
+                  alt: content.alt,
+                  type: (file.contentType.includes("image")
+                    ? "image"
+                    : file.contentType.includes("video")
+                    ? "video"
+                    : file.contentType.includes("audio")
+                    ? "audio"
+                    : "file") as "image" | "video" | "audio" | "file",
+                };
+              } else {
+                return {
+                  id: content.content,
+                  alt: "attached file",
+                  type: "file",
+                };
+              }
+            })()
+      )
     );
     let vote = 0;
     let votedata = await db.db!.all(
