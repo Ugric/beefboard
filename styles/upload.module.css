@@ -130,8 +130,9 @@
 .alt_input {
   width: 100%;
   background-color: transparent;
-  border: none;
   color: var(--secondary-text-colour);
+  border: solid 1px var(--primary-text-colour);
+  padding: 0.5rem;
   outline: none;
   text-align: center;
 }

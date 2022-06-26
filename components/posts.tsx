@@ -4,10 +4,8 @@ import type { postProps } from "./post";
 import { CSSProperties } from "styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import AdBanner from "./ads";
-import { createContext, useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
-import { GoogleReCaptcha } from "react-google-recaptcha-v3";
-import { watchtimeReqData } from "../pages/api/watchtime";
 import axios from "axios";
 import { useRecaptcha } from "./recaptcha_client";
 
@@ -181,7 +179,7 @@ function Posts({
         {posts.map((post, index) =>
           post.type == "adsense" ? (
             <div className={styles.post_outer_container} key={"ad-" + index}>
-              <div className={styles.post + " ad"}>
+              <div className={styles.post}>
                 <AdBanner adID={post.adID}></AdBanner>
               </div>
             </div>

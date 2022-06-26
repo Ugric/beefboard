@@ -64,7 +64,7 @@ function Post({
   useEffect(() => {
     if (contentref.current) {
       const outputsize = () => {
-        if (contentref.current && contentref.current.offsetHeight >= 250) {
+        if (contentref.current && contentref.current.offsetHeight >= 750) {
           setneedsToShowMore(true);
         } else {
           setneedsToShowMore(false);

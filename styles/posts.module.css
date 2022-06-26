@@ -98,7 +98,7 @@
 .hide_some {
   -webkit-mask-image: linear-gradient(180deg,#000 60%,transparent);
     mask-image: linear-gradient(180deg,#000 60%,transparent);
-    max-height: 250px;
+    max-height: 750px;
         overflow: hidden;
 }
 
